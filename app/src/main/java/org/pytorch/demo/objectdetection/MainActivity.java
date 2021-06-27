@@ -79,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements Runnable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // 파일 읽기 권한 요청
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
-        
+
         // 카메라 사용 권한 요청
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
         // 투명화 적용 (결과 적용시 활성화)
         mResultView = findViewById(R.id.resultView);
         mResultView.setVisibility(View.INVISIBLE);
-        
+
         // Test 이미지 변경 버튼
         final Button buttonTest = findViewById(R.id.testButton);
         // 버튼위 텍스트 설정
@@ -144,39 +144,48 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 // 결과창 비활성화
                 mResultView.setVisibility(View.INVISIBLE);
 
-                final CharSequence[] options = { "Choose from Photos", "Take Picture", "Cancel" };
+                final CharSequence[] options = {"Choose from Photos", "Take Picture", "Cancel"};
                 /*
                 AlertDialog: 사용자의 전체 화면을 가리지 않으면서 사용자의 응답이나 추가 정보를 입력하도록 하는 작은 창
                 */
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 // 창의 이름 설정
                 builder.setTitle("New Test Image");
-
+                // 선택목록 설정 (위 옵션들 3개)
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
+                    // 각 목록클릭시 이벤트 정의
                     public void onClick(DialogInterface dialog, int item) {
+                        // Take Picture 선택시
                         if (options[item].equals("Take Picture")) {
+                            // 사진촬영 기능 실행
                             Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                             startActivityForResult(takePicture, 0);
                         }
+                        // Choose~ 선택시
                         else if (options[item].equals("Choose from Photos")) {
+                            // 저장소에서 사진 선택하기
                             Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                            startActivityForResult(pickPhoto , 1);
+                            startActivityForResult(pickPhoto, 1);
                         }
+                        // Cancel일 경우 창닫기
                         else if (options[item].equals("Cancel")) {
                             dialog.dismiss();
                         }
                     }
                 });
+                // 알림창 보여주기
                 builder.show();
             }
         });
 
+        // Live 버튼
         final Button buttonLive = findViewById(R.id.liveButton);
+        // Live 버튼 클릭시 이벤트 정의
         buttonLive.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-              final Intent intent = new Intent(MainActivity.this, ObjectDetectionActivity.class);
-              startActivity(intent);
+                final Intent intent = new Intent(MainActivity.this, ObjectDetectionActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -188,14 +197,14 @@ public class MainActivity extends AppCompatActivity implements Runnable {
                 mProgressBar.setVisibility(ProgressBar.VISIBLE);
                 mButtonDetect.setText(getString(R.string.run_model));
 
-                mImgScaleX = (float)mBitmap.getWidth() / PrePostProcessor.mInputWidth;
-                mImgScaleY = (float)mBitmap.getHeight() / PrePostProcessor.mInputHeight;
+                mImgScaleX = (float) mBitmap.getWidth() / PrePostProcessor.mInputWidth;
+                mImgScaleY = (float) mBitmap.getHeight() / PrePostProcessor.mInputHeight;
 
-                mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float)mImageView.getWidth() / mBitmap.getWidth() : (float)mImageView.getHeight() / mBitmap.getHeight());
-                mIvScaleY  = (mBitmap.getHeight() > mBitmap.getWidth() ? (float)mImageView.getHeight() / mBitmap.getHeight() : (float)mImageView.getWidth() / mBitmap.getWidth());
+                mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float) mImageView.getWidth() / mBitmap.getWidth() : (float) mImageView.getHeight() / mBitmap.getHeight());
+                mIvScaleY = (mBitmap.getHeight() > mBitmap.getWidth() ? (float) mImageView.getHeight() / mBitmap.getHeight() : (float) mImageView.getWidth() / mBitmap.getWidth());
 
-                mStartX = (mImageView.getWidth() - mIvScaleX * mBitmap.getWidth())/2;
-                mStartY = (mImageView.getHeight() -  mIvScaleY * mBitmap.getHeight())/2;
+                mStartX = (mImageView.getWidth() - mIvScaleX * mBitmap.getWidth()) / 2;
+                mStartY = (mImageView.getHeight() - mIvScaleY * mBitmap.getHeight()) / 2;
 
                 Thread thread = new Thread(MainActivity.this);
                 thread.start();
@@ -273,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements Runnable {
             mResultView.setResults(results);
             mResultView.invalidate();
             mResultView.setVisibility(View.VISIBLE);
+            // Is ok?
         });
     }
 }
